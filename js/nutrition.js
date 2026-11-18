@@ -95,10 +95,10 @@ FIT.views.nutrition = (() => {
     const jump = el.querySelector('#jumpToday');
     if (jump) jump.addEventListener('click', () => setDate(U.todayISO()));
     el.querySelector('#addCustom').addEventListener('click', () => openCustom());
-    el.querySelector('#addRecipe').addEventListener('click', () => openAddRecipe());
-    el.querySelector('#importOff')?.addEventListener('click', () => FIT.views.recipes.openImport('diary'));
+    el.querySelector('#addRecipe').addEventListener('click', () => { openAddRecipe(); });
+    el.querySelector('#importOff')?.addEventListener('click', () => { if (FIT.views.recipes && FIT.views.recipes.openImport) FIT.views.recipes.openImport('diary'); });
     el.querySelectorAll('[data-add-meal]').forEach((b) => {
-      b.addEventListener('click', () => openAddRecipe(null, b.dataset.addMeal));
+      b.addEventListener('click', () => { openAddRecipe(null, b.dataset.addMeal); });
     });
     el.querySelectorAll('[data-del-entry]').forEach((b) => {
       b.addEventListener('click', () => {
@@ -109,9 +109,41 @@ FIT.views.nutrition = (() => {
     });
   }
 
-  function openAddRecipe(recipeId, presetMeal, date) {
+  async function getRecipesForDiary() {
+    // Rezepte werden über Supabase geladen (angemeldeter Client)
+    if (FIT.views.recipes && typeof FIT.views.recipes.getAll === 'function') {
+      try { return await FIT.views.recipes.getAll(false); } catch (e) { /* fall through */ }
+    }
+    return Array.isArray(S.state.recipes) ? S.state.recipes : [];
+  }
+
+  async function openAddRecipe(recipeId, presetMeal, date) {
     const targetDate = date || selectedDate;
-    const recipes = S.state.recipes;
+    const SB = FIT.supabase;
+    const Cloud = FIT.cloud;
+    if (SB && (!SB.getState().configured || !SB.user)) {
+      if (Cloud && typeof Cloud.openAuthModal === 'function') {
+        UI.openModal({
+          title: 'Anmeldung erforderlich',
+          body: '<p class="modal-text">Melde dich an, um deine Rezepte aus Supabase zu laden und ins Tagebuch zu übernehmen.</p>',
+          submitLabel: 'Anmelden',
+          onSubmit() { Cloud.openAuthModal('signin', () => FIT.app.rerender()); }
+        });
+      } else {
+        UI.toast('Bitte zuerst anmelden.', 'error');
+      }
+      return;
+    }
+
+    let recipes = [];
+    try {
+      UI.toast('Lade Rezepte …');
+      recipes = await getRecipesForDiary();
+    } catch (e) {
+      UI.toast((Cloud && Cloud.escapeErr ? Cloud.escapeErr(e) : (e && e.message)) || 'Rezepte konnten nicht geladen werden.', 'error');
+      return;
+    }
+
     if (!recipes.length) {
       UI.openModal({
         title: 'Noch keine Rezepte',
@@ -121,7 +153,10 @@ FIT.views.nutrition = (() => {
       });
       return;
     }
-    const options = recipes.map((r) => '<option value="' + r.id + '"' + (r.id === recipeId ? ' selected' : '') + '>' + U.esc(r.name) + ' · ' + U.fmtNum((r.macros || {}).kcal || 0) + ' kcal</option>').join('');
+
+    const byId = {};
+    recipes.forEach((r) => { if (r && r.id != null) byId[String(r.id)] = r; });
+    const options = recipes.map((r) => '<option value="' + U.esc(r.id) + '"' + (String(r.id) === String(recipeId) ? ' selected' : '') + '>' + U.esc(r.name) + ' · ' + U.fmtNum((r.macros || {}).kcal || 0) + ' kcal</option>').join('');
     const body =
       UI.field('Rezept', '<select class="input" name="recipe">' + options + '</select>') +
       '<div class="form-grid two">' +
@@ -136,10 +171,12 @@ FIT.views.nutrition = (() => {
       submitLabel: 'Hinzufügen',
       onMount(form) {
         const update = () => {
-          const r = S.recipe(form.recipe.value);
+          const r = byId[String(form.recipe.value)];
           const p = Math.max(0.25, Number(form.portion.value) || 1);
-          const m = r ? r.macros || {} : {};
-          document.getElementById('recipePreview').innerHTML =
+          const m = r ? (r.macros || {}) : {};
+          const preview = document.getElementById('recipePreview');
+          if (!preview) return;
+          preview.innerHTML =
             '<div class="preview-title">' + U.esc(r ? r.name : '') + ' · ' + U.fmtNum(p, p % 1 ? 2 : 0) + ' Portion(en)</div>' +
             '<div class="macro-pills">' + UI.kcalPill((Number(m.kcal) || 0) * p) +
               UI.macroPill('Protein', (Number(m.protein) || 0) * p) +
@@ -151,7 +188,7 @@ FIT.views.nutrition = (() => {
         update();
       },
       onSubmit(form) {
-        const r = S.recipe(form.recipe.value);
+        const r = byId[String(form.recipe.value)];
         if (!r) throw new Error('Rezept nicht gefunden.');
         const portion = Math.max(0.25, Number(form.portion.value) || 1);
         const m = r.macros || {};

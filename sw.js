@@ -1,5 +1,5 @@
 ﻿/* FitLog Pro â€“ Offline-Cache (nur lokale Dateien) */
-const CACHE = 'fitlog-pro-v27';
+const CACHE = 'fitlog-pro-v28';
 const ASSETS = [
   './',
   './index.html',
@@ -8,11 +8,15 @@ const ASSETS = [
   './icon.svg',
   './icon-192.png',
   './icon-512.png',
+  './js/env.example.js',
   './js/util.js',
   './js/store.js',
   './js/ui.js',
+  './js/supabase.js',
+  './js/cloud.js',
   './js/dashboard.js',
   './js/recipes.js',
+  './js/meters.js',
   './js/nutrition.js',
   './js/exercises.js',
   './js/plans.js',

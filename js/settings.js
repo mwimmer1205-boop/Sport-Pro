@@ -64,9 +64,14 @@ FIT.views.settings = (() => {
           '</form>' +
         '</section>' +
 
+        '<section class="card" id="cloudAccountCard">' +
+          '<div class="card-head"><div><h2>Konto & Synchronisation</h2><p class="muted">Supabase-Anmeldung für Zählerstände und Rezepte.</p></div></div>' +
+          '<div id="cloudAccountBody"></div>' +
+        '</section>' +
+
         '<section class="card">' +
-          '<div class="card-head"><div><h2>Daten & Sicherung</h2><p class="muted">Alles liegt nur auf diesem Gerät (' + kb + ' KB belegt).</p></div></div>' +
-          '<p class="muted small-text">Sichere deine Daten regelmäßig als JSON-Datei – zum Beispiel vor einem Browser-Wechsel oder zum Übertragen auf ein anderes Gerät.</p>' +
+          '<div class="card-head"><div><h2>Daten & Sicherung</h2><p class="muted">Lokale Daten dieses Geräts (' + kb + ' KB belegt).</p></div></div>' +
+          '<p class="muted small-text">Sichere deine lokalen Daten regelmäßig als JSON-Datei – zum Beispiel vor einem Browser-Wechsel oder zum Übertragen auf ein anderes Gerät. Zählerstände und Rezepte werden über dein Supabase-Konto synchronisiert (wenn angemeldet).</p>' +
           '<div class="settings-actions">' +
             '<button class="btn ghost" id="exportData">' + UI.icon('download') + ' Backup exportieren</button>' +
             '<button class="btn ghost" id="importData">' + UI.icon('upload') + ' Backup importieren</button>' +
@@ -79,12 +84,12 @@ FIT.views.settings = (() => {
         '</section>' +
 
         '<section class="card wide-card">' +
-          '<div class="card-head"><div><h2>Über FitLog Pro</h2><p class="muted">Version 1.0 · offline & ohne Konto</p></div></div>' +
+          '<div class="card-head"><div><h2>Über FitLog Pro</h2><p class="muted">Version 1.0</p></div></div>' +
           '<div class="about-grid">' +
-            '<div><strong>' + UI.icon('shield') + ' Datenschutz</strong><p>Keine Cloud, kein Tracking, keine externen Ressourcen. Alle Eingaben bleiben im lokalen Speicher deines Browsers.</p></div>' +
-            '<div><strong>' + UI.icon('download') + ' Offline</strong><p>Die App funktioniert nach dem ersten Aufruf auch ohne Internet. Über das Browser-Menü lässt sie sich als App installieren.</p></div>' +
-            '<div><strong>' + UI.icon('recipes') + ' Rezepte & Makros</strong><p>Speichere Gerichte pro Portion und übernimm sie mit einem Klick in dein Tages-Tagebuch.</p></div>' +
-            '<div><strong>' + UI.icon('dumbbell') + ' Training</strong><p>Pläne mit Tagen und Übungen anlegen, Einheiten starten und Volumen automatisch berechnen.</p></div>' +
+            '<div><strong>' + UI.icon('shield') + ' Datenschutz & Sync</strong><p>Lokale Daten (z. B. Tagebuch, Training, Gewohnheiten) bleiben im Browser dieses Geräts. Zählerstände und Rezepte werden über Supabase mit deinem Konto synchronisiert, wenn du angemeldet bist.</p></div>' +
+            '<div><strong>' + UI.icon('download') + ' Offline</strong><p>Viele Funktionen funktionieren offline. Für Anmeldung und Cloud-Synchronisation (Zählerstände, Rezepte) ist eine Internetverbindung erforderlich.</p></div>' +
+            '<div><strong>' + UI.icon('recipes') + ' Rezepte & Makros</strong><p>Rezepte speichern und mit einem Klick ins Tages-Tagebuch übernehmen.</p></div>' +
+            '<div><strong>' + UI.icon('dumbbell') + ' Training</strong><p>Pläne mit Übungen anlegen, Einheiten starten und Volumen automatisch berechnen.</p></div>' +
           '</div>' +
         '</section>' +
       '</div>';
@@ -206,15 +211,79 @@ FIT.views.settings = (() => {
     el.querySelector('#resetData').addEventListener('click', async () => {
       const ok = await UI.confirm({
         title: 'Wirklich alles löschen?',
-        message: 'Sämtliche Zähler, Rezepte, Tagebuch-Einträge, Pläne und Trainings werden unwiderruflich entfernt.',
+        message: 'Sämtliche lokalen Zähler, Rezepte, Tagebuch-Einträge, Pläne und Trainings auf diesem Gerät werden unwiderruflich entfernt. Cloud-Daten (Supabase) bleiben davon unberührt.',
         confirmLabel: 'Alles löschen'
       });
       if (!ok) return;
       S.reset();
-      UI.toast('Alle Daten gelöscht');
+      try { if (FIT.views.recipes && FIT.views.recipes.reset) FIT.views.recipes.reset(); } catch (e) {}
+      try { if (FIT.views.meters && FIT.views.meters.reset) FIT.views.meters.reset(); } catch (e) {}
+      UI.toast('Alle lokalen Daten gelöscht');
       location.hash = '#/dashboard';
       FIT.app.rerender();
     });
+
+    function renderCloudAccount() {
+      const body = el.querySelector('#cloudAccountBody');
+      if (!body) return;
+      const SB = FIT.supabase;
+      const Cloud = FIT.cloud;
+      if (!SB) {
+        body.innerHTML = '<p class="muted">Supabase-Modul nicht geladen.</p>';
+        return;
+      }
+      const state = SB.getState();
+      if (!state.configured) {
+        body.innerHTML =
+          '<p class="muted small-text">Supabase ist noch nicht konfiguriert. Hinterlege die Projekt-URL und den öffentlichen Anon-Key (z. B. in <code>js/env.js</code> basierend auf <code>js/env.example.js</code> oder über Umgebungsvariablen/Globals deiner Umgebung). <strong>Keinen</strong> <code>service_role</code>- oder Secret-Schlüssel im Browser verwenden.</p>' +
+          '<div class="settings-actions" style="margin-top:10px"><button class="btn ghost small" id="cloudRetryInit">Konfiguration erneut prüfen</button></div>';
+        body.querySelector('#cloudRetryInit')?.addEventListener('click', async () => {
+          try { await SB.init(); } catch (e) {}
+          renderCloudAccount();
+        });
+        return;
+      }
+      if (state.error && !SB.getClient()) {
+        body.innerHTML =
+          '<p class="muted small-text">Supabase konnte nicht initialisiert werden: ' + U.esc(Cloud && Cloud.escapeErr ? Cloud.escapeErr(state.error) : String(state.error)) + '</p>' +
+          '<div class="settings-actions" style="margin-top:10px"><button class="btn ghost small" id="cloudRetryInit">Erneut versuchen</button></div>';
+        body.querySelector('#cloudRetryInit')?.addEventListener('click', async () => {
+          try { await SB.init(); } catch (e) {}
+          renderCloudAccount();
+        });
+        return;
+      }
+      if (SB.user) {
+        body.innerHTML =
+          '<p><strong>Angemeldet</strong></p>' +
+          '<p class="muted small-text">' + U.esc(SB.userEmail ? SB.userEmail() : (SB.user.email || '')) + '</p>' +
+          '<p class="muted small-text" style="margin-top:6px">Melde dich auf Handy und Computer mit demselben Konto an, um Zählerstände und Rezepte zu synchronisieren.</p>' +
+          '<div class="settings-actions" style="margin-top:10px"><button class="btn ghost" id="cloudSignOut">Abmelden</button></div>';
+        body.querySelector('#cloudSignOut')?.addEventListener('click', async () => {
+          try {
+            await SB.signOut();
+            try { if (FIT.views.recipes && FIT.views.recipes.reset) FIT.views.recipes.reset(); } catch (e) {}
+            try { if (FIT.views.meters && FIT.views.meters.reset) FIT.views.meters.reset(); } catch (e) {}
+            UI.toast('Abgemeldet');
+            renderCloudAccount();
+            FIT.app.rerender();
+          } catch (e) {
+            UI.toast(Cloud && Cloud.escapeErr ? Cloud.escapeErr(e) : 'Abmelden fehlgeschlagen', 'error');
+          }
+        });
+        return;
+      }
+      body.innerHTML =
+        '<p class="muted small-text">Du bist nicht angemeldet. Melde dich an, um Zählerstände und Rezepte über Supabase zu laden und zu speichern.</p>' +
+        '<div class="settings-actions" style="margin-top:10px">' +
+          '<button class="btn primary" id="cloudSignIn">Anmelden</button>' +
+          '<button class="btn ghost" id="cloudSignUp">Konto erstellen</button>' +
+        '</div>';
+      body.querySelector('#cloudSignIn')?.addEventListener('click', () => Cloud && Cloud.openAuthModal && Cloud.openAuthModal('signin', () => { renderCloudAccount(); FIT.app.rerender(); }));
+      body.querySelector('#cloudSignUp')?.addEventListener('click', () => Cloud && Cloud.openAuthModal && Cloud.openAuthModal('signup', () => { renderCloudAccount(); FIT.app.rerender(); }));
+    }
+
+    renderCloudAccount();
   }
 
   return { render };

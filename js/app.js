@@ -12,14 +12,15 @@ FIT.app = (() => {
     { route: 'recipes', label: 'Rezepte', icon: 'recipes' },
     { route: 'plans', label: 'Trainingsplan', icon: 'plans' },
     { route: 'training', label: 'Trainingsmodus', icon: 'log' },
-    { route: 'counters', label: 'Zähler', icon: 'counters' },
+    { route: 'counters', label: 'Gewohnheiten', icon: 'counters' },
+    { route: 'meters', label: 'Zählerstände', icon: 'target' },
     { route: 'settings', label: 'Einstellungen', icon: 'settings' }
   ];
 
   const TITLES = {
     dashboard: 'Übersicht', nutrition: 'Ernährung', recipes: 'Rezepte',
     plans: 'Trainingsplan', training: 'Trainingsmodus', log: 'Trainingsmodus',
-    counters: 'Zähler', settings: 'Einstellungen'
+    counters: 'Gewohnheiten', meters: 'Zählerstände', settings: 'Einstellungen'
   };
 
   let current = 'dashboard';
@@ -55,7 +56,7 @@ FIT.app = (() => {
     return TITLES[raw] ? raw : 'dashboard';
   }
 
-  function render() {
+  async function render() {
     const route = routeFromHash();
     current = route;
     setActive(route);
@@ -63,7 +64,7 @@ FIT.app = (() => {
     const mod = FIT.views[route];
     if (!view || !mod) return;
     try {
-      mod.render(view);
+      await mod.render(view);
     } catch (err) {
       console.error(err);
       view.innerHTML = '<div class="empty"><div class="empty-emoji">⚠️</div><h3>Da ist etwas schiefgelaufen</h3><p>' +
@@ -155,7 +156,13 @@ FIT.app = (() => {
     });
   }
 
-  function init() {
+  async function initCloud() {
+    if (FIT.supabase && typeof FIT.supabase.init === 'function') {
+      try { await FIT.supabase.init(); } catch (e) { console.error(e); }
+    }
+  }
+
+  async function init() {
     S.load();
     applyDeviceMode(getDeviceMode());
     renderNav();
@@ -180,6 +187,8 @@ FIT.app = (() => {
         try { if (FIT.views.training && typeof FIT.views.training.persistActive === 'function') FIT.views.training.persistActive(); } catch (e) {}
       }
     });
+
+    await initCloud();
     render();
 
     if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {

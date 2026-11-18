@@ -98,17 +98,22 @@ FIT.ui = (() => {
     requestAnimationFrame(() => wrap.classList.add('show'));
 
     const form = wrap.querySelector('form');
-    wrap.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeModal));
+    wrap.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => closeModal()));
     wrap.addEventListener('mousedown', (e) => { if (e.target === wrap) closeModal(); });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (opts.onSubmit) {
+        const submitBtn = form.querySelector('button[type=submit]');
+        const prevDisabled = submitBtn ? submitBtn.disabled : false;
+        if (submitBtn) submitBtn.disabled = true;
         try {
-          const res = opts.onSubmit(form);
+          const res = await opts.onSubmit(form);
           if (res !== false) closeModal();
         } catch (err) {
-          toast(err.message || 'Bitte Eingaben prüfen.', 'error');
+          toast((err && err.message) ? err.message : 'Bitte Eingaben prüfen.', 'error');
+        } finally {
+          if (submitBtn) submitBtn.disabled = prevDisabled;
         }
       } else {
         closeModal();
