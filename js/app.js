@@ -13,14 +13,13 @@ FIT.app = (() => {
     { route: 'plans', label: 'Trainingsplan', icon: 'plans' },
     { route: 'training', label: 'Trainingsmodus', icon: 'log' },
     { route: 'counters', label: 'Gewohnheiten', icon: 'counters' },
-    { route: 'meters', label: 'Zählerstände', icon: 'target' },
     { route: 'settings', label: 'Einstellungen', icon: 'settings' }
   ];
 
   const TITLES = {
     dashboard: 'Übersicht', nutrition: 'Ernährung', recipes: 'Rezepte',
     plans: 'Trainingsplan', training: 'Trainingsmodus', log: 'Trainingsmodus',
-    counters: 'Gewohnheiten', meters: 'Zählerstände', settings: 'Einstellungen'
+    counters: 'Gewohnheiten', settings: 'Einstellungen'
   };
 
   let current = 'dashboard';
@@ -63,6 +62,7 @@ FIT.app = (() => {
     const view = document.getElementById('view');
     const mod = FIT.views[route];
     if (!view || !mod) return;
+    try { document.body.dataset.route = route; } catch (e) {}
     try {
       await mod.render(view);
     } catch (err) {

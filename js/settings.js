@@ -65,13 +65,13 @@ FIT.views.settings = (() => {
         '</section>' +
 
         '<section class="card" id="cloudAccountCard">' +
-          '<div class="card-head"><div><h2>Konto & Synchronisation</h2><p class="muted">Supabase-Anmeldung für Zählerstände und Rezepte.</p></div></div>' +
+          '<div class="card-head"><div><h2>Konto & Synchronisation</h2><p class="muted">Supabase-Anmeldung für Rezepte.</p></div></div>' +
           '<div id="cloudAccountBody"></div>' +
         '</section>' +
 
         '<section class="card">' +
           '<div class="card-head"><div><h2>Daten & Sicherung</h2><p class="muted">Lokale Daten dieses Geräts (' + kb + ' KB belegt).</p></div></div>' +
-          '<p class="muted small-text">Sichere deine lokalen Daten regelmäßig als JSON-Datei – zum Beispiel vor einem Browser-Wechsel oder zum Übertragen auf ein anderes Gerät. Zählerstände und Rezepte werden über dein Supabase-Konto synchronisiert (wenn angemeldet).</p>' +
+          '<p class="muted small-text">Sichere deine lokalen Daten regelmäßig als JSON-Datei – zum Beispiel vor einem Browser-Wechsel oder zum Übertragen auf ein anderes Gerät. Rezepte werden über dein Supabase-Konto synchronisiert (wenn angemeldet).</p>' +
           '<div class="settings-actions">' +
             '<button class="btn ghost" id="exportData">' + UI.icon('download') + ' Backup exportieren</button>' +
             '<button class="btn ghost" id="importData">' + UI.icon('upload') + ' Backup importieren</button>' +
@@ -86,8 +86,8 @@ FIT.views.settings = (() => {
         '<section class="card wide-card">' +
           '<div class="card-head"><div><h2>Über FitLog Pro</h2><p class="muted">Version 1.0</p></div></div>' +
           '<div class="about-grid">' +
-            '<div><strong>' + UI.icon('shield') + ' Datenschutz & Sync</strong><p>Lokale Daten (z. B. Tagebuch, Training, Gewohnheiten) bleiben im Browser dieses Geräts. Zählerstände und Rezepte werden über Supabase mit deinem Konto synchronisiert, wenn du angemeldet bist.</p></div>' +
-            '<div><strong>' + UI.icon('download') + ' Offline</strong><p>Viele Funktionen funktionieren offline. Für Anmeldung und Cloud-Synchronisation (Zählerstände, Rezepte) ist eine Internetverbindung erforderlich.</p></div>' +
+            '<div><strong>' + UI.icon('shield') + ' Datenschutz & Sync</strong><p>Lokale Daten (z. B. Tagebuch, Training, Gewohnheiten) bleiben im Browser dieses Geräts. Rezepte werden über Supabase mit deinem Konto synchronisiert, wenn du angemeldet bist.</p></div>' +
+            '<div><strong>' + UI.icon('download') + ' Offline</strong><p>Viele Funktionen funktionieren offline. Für Anmeldung und Cloud-Synchronisation von Rezepten ist eine Internetverbindung erforderlich.</p></div>' +
             '<div><strong>' + UI.icon('recipes') + ' Rezepte & Makros</strong><p>Rezepte speichern und mit einem Klick ins Tages-Tagebuch übernehmen.</p></div>' +
             '<div><strong>' + UI.icon('dumbbell') + ' Training</strong><p>Pläne mit Übungen anlegen, Einheiten starten und Volumen automatisch berechnen.</p></div>' +
           '</div>' +
@@ -217,7 +217,6 @@ FIT.views.settings = (() => {
       if (!ok) return;
       S.reset();
       try { if (FIT.views.recipes && FIT.views.recipes.reset) FIT.views.recipes.reset(); } catch (e) {}
-      try { if (FIT.views.meters && FIT.views.meters.reset) FIT.views.meters.reset(); } catch (e) {}
       UI.toast('Alle lokalen Daten gelöscht');
       location.hash = '#/dashboard';
       FIT.app.rerender();
@@ -257,13 +256,12 @@ FIT.views.settings = (() => {
         body.innerHTML =
           '<p><strong>Angemeldet</strong></p>' +
           '<p class="muted small-text">' + U.esc(SB.userEmail ? SB.userEmail() : (SB.user.email || '')) + '</p>' +
-          '<p class="muted small-text" style="margin-top:6px">Melde dich auf Handy und Computer mit demselben Konto an, um Zählerstände und Rezepte zu synchronisieren.</p>' +
+          '<p class="muted small-text" style="margin-top:6px">Melde dich auf Handy und Computer mit demselben Konto an, um Rezepte zu synchronisieren.</p>' +
           '<div class="settings-actions" style="margin-top:10px"><button class="btn ghost" id="cloudSignOut">Abmelden</button></div>';
         body.querySelector('#cloudSignOut')?.addEventListener('click', async () => {
           try {
             await SB.signOut();
             try { if (FIT.views.recipes && FIT.views.recipes.reset) FIT.views.recipes.reset(); } catch (e) {}
-            try { if (FIT.views.meters && FIT.views.meters.reset) FIT.views.meters.reset(); } catch (e) {}
             UI.toast('Abgemeldet');
             renderCloudAccount();
             FIT.app.rerender();
@@ -274,7 +272,7 @@ FIT.views.settings = (() => {
         return;
       }
       body.innerHTML =
-        '<p class="muted small-text">Du bist nicht angemeldet. Melde dich an, um Zählerstände und Rezepte über Supabase zu laden und zu speichern.</p>' +
+        '<p class="muted small-text">Du bist nicht angemeldet. Melde dich an, um Rezepte über Supabase zu laden und zu speichern.</p>' +
         '<div class="settings-actions" style="margin-top:10px">' +
           '<button class="btn primary" id="cloudSignIn">Anmelden</button>' +
           '<button class="btn ghost" id="cloudSignUp">Konto erstellen</button>' +

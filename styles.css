@@ -1311,7 +1311,99 @@ body.device-desktop .scrim { display: none !important; }
   .toast { font-size: 12px; padding: 9px 14px; }
 }
 
-/* ---------- Cloud / Supabase / Zählerstände ---------- */
+/* ---------- Mobile Dashboard: alles auf einen Bildschirm ---------- */
+
+body.device-mobile[data-route="dashboard"] .app-foot { display: none; }
+body.device-mobile[data-route="dashboard"] .view {
+  padding: 10px 12px 12px;
+  max-width: 100%;
+  height: calc(100dvh - 56px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+body.device-mobile[data-route="dashboard"] .dashboard-head {
+  margin-bottom: 0;
+  gap: 8px;
+  align-items: center;
+}
+body.device-mobile[data-route="dashboard"] .dashboard-head h1 { font-size: 18px; line-height: 1.2; }
+body.device-mobile[data-route="dashboard"] .dashboard-head p { display: none; }
+body.device-mobile[data-route="dashboard"] .dashboard-head .head-actions { width: auto; flex-wrap: nowrap; gap: 6px; }
+body.device-mobile[data-route="dashboard"] .dashboard-head .head-actions .btn { padding: 7px 10px; font-size: 12px; flex: 0 0 auto; }
+body.device-mobile[data-route="dashboard"] .dashboard-head .head-actions .btn svg { width: 15px; height: 15px; }
+
+body.device-mobile[data-route="dashboard"] .dashboard-counters {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 8px;
+  margin-bottom: 0;
+}
+body.device-mobile[data-route="dashboard"] .dashboard-counters .counter-card {
+  padding: 10px;
+  gap: 6px;
+  min-width: 0;
+}
+body.device-mobile[data-route="dashboard"] .dashboard-counters .counter-head { gap: 8px; }
+body.device-mobile[data-route="dashboard"] .dashboard-counters .counter-emoji { width: 30px; height: 30px; font-size: 15px; border-radius: 9px; }
+body.device-mobile[data-route="dashboard"] .dashboard-counters .counter-titles h3 { font-size: 11px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.device-mobile[data-route="dashboard"] .dashboard-counters .counter-titles p { display: none; }
+body.device-mobile[data-route="dashboard"] .dashboard-counters .counter-value { font-size: 22px; }
+body.device-mobile[data-route="dashboard"] .dashboard-counters .counter-unit { font-size: 10px; }
+body.device-mobile[data-route="dashboard"] .dashboard-counters .dots,
+body.device-mobile[data-route="dashboard"] .dashboard-counters .bar.slim,
+body.device-mobile[data-route="dashboard"] .dashboard-counters .counter-meta { display: none; }
+body.device-mobile[data-route="dashboard"] .dashboard-counters .counter-foot { gap: 6px; }
+body.device-mobile[data-route="dashboard"] .dashboard-counters .btn.small { padding: 5px 8px; font-size: 11px; min-height: 0; }
+body.device-mobile[data-route="dashboard"] .dashboard-counters .btn.small svg { width: 14px; height: 14px; }
+
+body.device-mobile[data-route="dashboard"] .dashboard-main {
+  grid-template-columns: 1fr 1fr !important;
+  gap: 8px;
+  margin-bottom: 0;
+  flex: 1;
+  min-height: 0;
+}
+body.device-mobile[data-route="dashboard"] .dashboard-main > .card {
+  padding: 12px;
+  min-height: 0;
+  overflow: hidden;
+}
+body.device-mobile[data-route="dashboard"] .dashboard-main .card-head { margin-bottom: 8px; gap: 8px; }
+body.device-mobile[data-route="dashboard"] .dashboard-main .card-head h2 { font-size: 13px; }
+body.device-mobile[data-route="dashboard"] .dashboard-main .card-head p { display: none; }
+body.device-mobile[data-route="dashboard"] .dashboard-main .card-head .btn.small { padding: 4px 8px; font-size: 11px; }
+body.device-mobile[data-route="dashboard"] .dashboard-main .icon-btn { width: 28px; height: 28px; }
+
+body.device-mobile[data-route="dashboard"] .nutrition-summary { gap: 8px; }
+body.device-mobile[data-route="dashboard"] .kcal-row { gap: 10px; }
+body.device-mobile[data-route="dashboard"] .kcal-row .ring { width: 76px; height: 76px; }
+body.device-mobile[data-route="dashboard"] .kcal-row .ring::before { inset: 8px; }
+body.device-mobile[data-route="dashboard"] .kcal-row .ring-inner strong { font-size: 15px; }
+body.device-mobile[data-route="dashboard"] .kcal-row .ring-inner span { font-size: 8.5px; }
+body.device-mobile[data-route="dashboard"] .kcal-remaining { font-size: 11px; }
+body.device-mobile[data-route="dashboard"] .kcal-info .muted.small-text { display: none; }
+body.device-mobile[data-route="dashboard"] .macro-row { gap: 2px; }
+body.device-mobile[data-route="dashboard"] .macro-row-head { font-size: 10.5px; }
+body.device-mobile[data-route="dashboard"] .bar { height: 5px; }
+
+body.device-mobile[data-route="dashboard"] .training-body { gap: 6px; }
+body.device-mobile[data-route="dashboard"] .training-body .muted.small-text { font-size: 11px; }
+body.device-mobile[data-route="dashboard"] .workout-mini { padding: 8px; gap: 8px; }
+body.device-mobile[data-route="dashboard"] .workout-mini-icon { width: 28px; height: 28px; }
+body.device-mobile[data-route="dashboard"] .workout-mini-main strong { font-size: 12px; }
+body.device-mobile[data-route="dashboard"] .workout-mini-main small { font-size: 10.5px; }
+body.device-mobile[data-route="dashboard"] .dashboard-training .btn.small.full { padding: 6px 8px; font-size: 11px; }
+
+body.device-mobile[data-route="dashboard"] .dashboard-volume { display: none !important; }
+
+@media (max-width: 420px) {
+  body.device-mobile[data-route="dashboard"] .dashboard-main { grid-template-columns: 1fr !important; }
+  body.device-mobile[data-route="dashboard"] .dashboard-volume { display: none !important; }
+}
+
+/* ---------- Cloud / Supabase ---------- */
 
 .cloud-state {
   display: flex;
@@ -1337,9 +1429,3 @@ body.device-desktop .scrim { display: none !important; }
   animation: cloud-spin 0.8s linear infinite;
 }
 @keyframes cloud-spin { to { transform: rotate(360deg); } }
-
-.meters-list { display: flex; flex-direction: column; gap: 12px; }
-.meter-card .meter-value { display: flex; align-items: baseline; gap: 8px; margin: 2px 0 4px; }
-.meter-card .meter-value strong { font-size: 28px; letter-spacing: -0.03em; color: var(--accent); line-height: 1.1; }
-.meter-card .meter-value span { color: var(--muted); font-size: 13px; }
-.meter-card h3 { font-size: 16px; }

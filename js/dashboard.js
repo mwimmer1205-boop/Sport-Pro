@@ -127,7 +127,7 @@ FIT.views.dashboard = (() => {
     }
 
     el.innerHTML =
-      '<section class="page-head">' +
+      '<section class="page-head dashboard-head">' +
         '<div><h1>' + greeting() + name + ' 👋</h1><p>' + U.esc(U.fmtDateLong(today)) + '</p></div>' +
         '<div class="head-actions">' +
           '<a class="btn ghost" href="#/recipes">' + UI.icon('recipes') + ' Rezepte</a>' +
@@ -135,9 +135,9 @@ FIT.views.dashboard = (() => {
         '</div>' +
       '</section>' +
 
-      '<div class="grid counters-grid">' + S.counterList().map(counterCard).join('') + '</div>' +
+      '<div class="grid counters-grid dashboard-counters">' + S.counterList().map(counterCard).join('') + '</div>' +
 
-      '<div class="dash-grid">' +
+      '<div class="dash-grid dashboard-main">' +
         '<section class="card nutrition-summary">' +
           '<div class="card-head"><div><h2>Ernährung heute</h2><p class="muted">' + (entries.length === 1 ? '1 Eintrag' : U.fmtNum(entries.length) + ' Einträge') + '</p></div>' +
           '<a class="btn ghost small" href="#/nutrition">Tagebuch</a></div>' +
@@ -153,14 +153,14 @@ FIT.views.dashboard = (() => {
           macroBar('Fett', totals.fat, goals.fat, 'fat') +
         '</section>' +
 
-        '<section class="card">' +
+        '<section class="card dashboard-training">' +
           '<div class="card-head"><div><h2>Training heute</h2><p class="muted">' + (todayWorkouts.length ? 'Erledigt – stark!' : 'Bereit für die nächste Einheit?') + '</p></div>' +
           '<a class="icon-btn" href="#/training" title="Trainingsmodus">' + UI.icon('log') + '</a></div>' +
           '<div class="training-body">' + trainingBody + '</div>' +
         '</section>' +
       '</div>' +
 
-      '<section class="card">' +
+      '<section class="card dashboard-volume">' +
         '<div class="card-head"><div><h2>Wochenvolumen</h2><p class="muted">Letzte 8 Wochen · ' + U.fmtNum(S.workoutsThisWeek()) + ' von ' + U.fmtNum(S.state.profile.weeklyGoal) + ' Trainings diese Woche</p></div>' +
         '<a class="btn ghost small" href="#/training">Details</a></div>' +
         FIT.views.log.chart(week) +
