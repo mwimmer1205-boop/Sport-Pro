@@ -1339,6 +1339,15 @@ body.device-mobile[data-route="dashboard"] .dashboard-date {
   color: var(--muted);
 }
 
+.dashboard-counters .counter-card { align-items: center; text-align: center; }
+.dashboard-counters .counter-head { flex-direction: column; align-items: center; gap: 8px; }
+.dashboard-counters .counter-titles { text-align: center; }
+.dashboard-counters .counter-titles h3 { width: 100%; }
+.dashboard-counters .counter-value-row { justify-content: center; flex-wrap: wrap; }
+.dashboard-counters .counter-foot { justify-content: center; width: 100%; margin-top: auto; }
+.dashboard-counters .counter-meta { margin-left: 0; text-align: center; }
+.dashboard-counters .dots { justify-content: center; }
+
 body.device-mobile[data-route="dashboard"] .dashboard-counters {
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   gap: 8px;

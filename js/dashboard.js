@@ -30,16 +30,16 @@ FIT.views.dashboard = (() => {
     if (isAuto) {
       const val = S.autoDays(c);
       const info = typeof S.savedMoney === 'function' ? S.savedMoney(c.key) : null;
-      const moneyLine = info ? (U.fmtNum(info.saved, 2) + ' € gespart') : '';
+      const moneyValue = info ? U.fmtNum(info.saved, 2) + ' €' : '';
       return '<article class="card counter-card" data-counter="' + c.key + '">' +
         '<div class="counter-head">' +
           '<span class="counter-emoji">' + U.esc(c.emoji || '🎯') + '</span>' +
           '<div class="counter-titles"><h3>' + U.esc(c.label) + '</h3></div>' +
         '</div>' +
         '<div class="counter-value-row"><span class="counter-value">' + U.fmtNum(val) + '</span><span class="counter-unit">' + (c.key === 'smoke' ? 'Tage rauchfrei' : 'Tage') + '</span></div>' +
+        (c.key === 'smoke' && moneyValue ? '<div class="counter-value-row counter-money-row"><span class="counter-value">' + U.esc(moneyValue) + '</span><span class="counter-unit">gespart</span></div>' : '') +
         '<div class="counter-foot">' +
           (c.startDate ? '' : '<button class="btn small primary" data-edit-counter="' + c.key + '">Startdatum</button>') +
-          '<span class="counter-meta">' + U.esc(moneyLine) + '</span>' +
         '</div>' +
       '</article>';
     }
