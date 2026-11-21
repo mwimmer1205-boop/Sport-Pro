@@ -1,4 +1,4 @@
-/* FitLog Pro – Tageszähler (rauchfrei, Sport, privat) */
+/* Sport Pro – Tageszähler (rauchfrei, Sport, privat) */
 window.FIT = window.FIT || {};
 FIT.views = FIT.views || {};
 
@@ -20,6 +20,33 @@ FIT.views.counters = (() => {
         : 'Zählt automatisch ab dem festgelegten Datum, ohne tägliches Abhaken.';
     }
     return HINTS[c.key] || '';
+  }
+
+  function weekCalendar(c) {
+    const today = U.todayISO();
+    const monday = U.startOfWeek(today);
+    const days = [];
+    for (let i = 0; i < 7; i += 1) {
+      const d = U.addDays(monday, i);
+      const checked = S.isChecked(c.key, d);
+      const isToday = d === today;
+      const weekday = U.fmtDate(d, { weekday: 'short' });
+      const dayNum = U.parseISO(d).getDate();
+      days.push(
+        '<button type="button" class="week-day' + (checked ? ' on' : '') + (isToday ? ' today' : '') + '" data-day="' + d + '" aria-label="' + U.esc(U.fmtDateLong(d) + (checked ? ' erledigt' : '')) + '">' +
+          '<span class="week-day-name">' + U.esc(weekday) + '</span>' +
+          '<span class="week-day-num">' + dayNum + '</span>' +
+          '<span class="week-day-mark">' + (checked ? UI.icon('check') : '') + '</span>' +
+        '</button>'
+      );
+    }
+    const start = U.parseISO(monday);
+    const end = U.parseISO(U.addDays(monday, 6));
+    const range = U.fmtDate(monday, { day: 'numeric', month: 'short' }) + ' – ' + U.fmtDate(U.addDays(monday, 6), { day: 'numeric', month: 'short', year: true });
+    return '<div class="week-calendar-wrap">' +
+      '<div class="week-calendar-head"><span class="muted small-text">Aktuelle Kalenderwoche</span><span class="muted small-text">' + U.esc(range) + '</span></div>' +
+      '<div class="week-calendar">' + days.join('') + '</div>' +
+    '</div>';
   }
 
   function heatmap(c) {
@@ -54,8 +81,6 @@ FIT.views.counters = (() => {
     const best = S.bestStreak(c.key);
     const total = S.totalDays(c.key);
     const doneToday = S.isChecked(c.key, U.todayISO());
-    const goal = Number(c.goal) || 0;
-    const pct = goal > 0 ? U.clamp(Math.round(((isValue ? Number(c.value) : streak) / goal) * 100), 0, 100) : 0;
 
     return '<section class="card counter-detail" data-counter-detail="' + c.key + '">' +
       '<div class="counter-detail-head">' +
@@ -85,9 +110,7 @@ FIT.views.counters = (() => {
               '<div><strong>' + U.fmtNum(streak) + '</strong><span>Tage seit Start</span></div>' +
               '<div><strong>' + U.fmtNum(best) + '</strong><span>Beste Serie</span></div>' +
               '<div><strong>' + U.fmtNum(total) + '</strong><span>Tage gesamt</span></div>' +
-              '<div><strong>' + pct + ' %</strong><span>Ziel ' + U.fmtNum(goal) + '</span></div>' +
             '</div>' +
-            '<div class="bar"><span class="bar-fill accent" style="width:' + pct + '%"></span></div>' +
             moneyHtml +
             '<div class="counter-detail-foot">' +
               '<button class="btn ' + (c.startDate ? 'ghost' : 'primary') + '" data-edit-counter="' + c.key + '">' +
@@ -98,24 +121,27 @@ FIT.views.counters = (() => {
           );
         })()
         : (isValue ?
-        '<div class="value-counter">' +
-          '<div class="value-main"><strong>' + U.fmtNum(c.value) + '</strong><span>von ' + U.fmtNum(c.target) + '</span></div>' +
-          '<div class="bar"><span class="bar-fill accent" style="width:' + pct + '%"></span></div>' +
-          '<div class="row gap">' +
-            '<button class="btn ghost" data-adjust="' + c.key + '" data-delta="-1">' + UI.icon('minus') + ' −1</button>' +
-            '<button class="btn primary" data-adjust="' + c.key + '" data-delta="1">' + UI.icon('plus') + ' +1</button>' +
-            '<button class="btn ghost" data-reset-value="' + c.key + '">Zurücksetzen</button>' +
-          '</div>' +
-        '</div>'
+        (function () {
+          const target = Number(c.target) || 0;
+          const val = Number(c.value) || 0;
+          const pct = target > 0 ? U.clamp(Math.round((val / target) * 100), 0, 100) : 0;
+          return '<div class="value-counter">' +
+            '<div class="value-main"><strong>' + U.fmtNum(val) + '</strong><span>' + (target > 0 ? 'von ' + U.fmtNum(target) : '') + '</span></div>' +
+            (target > 0 ? '<div class="bar"><span class="bar-fill accent" style="width:' + pct + '%"></span></div>' : '') +
+            '<div class="row gap">' +
+              '<button class="btn ghost" data-adjust="' + c.key + '" data-delta="-1">' + UI.icon('minus') + ' −1</button>' +
+              '<button class="btn primary" data-adjust="' + c.key + '" data-delta="1">' + UI.icon('plus') + ' +1</button>' +
+              '<button class="btn ghost" data-reset-value="' + c.key + '">Zurücksetzen</button>' +
+            '</div>' +
+          '</div>';
+        })()
         :
         '<div class="counter-stats">' +
           '<div><strong>' + U.fmtNum(streak) + '</strong><span>Tage in Folge</span></div>' +
           '<div><strong>' + U.fmtNum(best) + '</strong><span>Beste Serie</span></div>' +
           '<div><strong>' + U.fmtNum(total) + '</strong><span>Tage gesamt</span></div>' +
-          '<div><strong>' + pct + ' %</strong><span>Ziel ' + U.fmtNum(goal) + '</span></div>' +
         '</div>' +
-        '<div class="bar"><span class="bar-fill accent" style="width:' + pct + '%"></span></div>' +
-        heatmap(c) +
+        (c.key === 'sport' ? weekCalendar(c) : heatmap(c)) +
         '<div class="counter-detail-foot">' +
           '<button class="btn ' + (doneToday ? 'done' : 'primary') + '" data-check="' + c.key + '">' +
             (doneToday ? UI.icon('check') + ' Heute erledigt – abwählen' : 'Heute abhaken') +
@@ -126,10 +152,8 @@ FIT.views.counters = (() => {
   }
 
   function render(el) {
+    FIT.app.setPageActions('');
     el.innerHTML =
-      '<section class="page-head">' +
-        '<div><h1>Zähler</h1><p>Deine Gewohnheiten – Tag für Tag. Alles bleibt lokal gespeichert.</p></div>' +
-      '</section>' +
       '<div class="counter-details">' + S.counterList().map(card).join('') + '</div>';
 
     el.querySelectorAll('[data-check]').forEach((b) => {
@@ -139,7 +163,7 @@ FIT.views.counters = (() => {
         render(el);
       });
     });
-    el.querySelectorAll('.heat-cell[data-day]').forEach((b) => {
+    el.querySelectorAll('.heat-cell[data-day], .week-day[data-day]').forEach((b) => {
       b.addEventListener('click', () => {
         const counterEl = b.closest('[data-counter-detail]');
         if (!counterEl) return;
@@ -179,7 +203,6 @@ FIT.views.counters = (() => {
         '<option value="auto"' + (c.mode === 'auto' ? ' selected' : '') + '>Automatisch ab Datum (zählt jeden Tag weiter)</option>' +
       '</select>') +
       '<div class="form-grid two">' +
-        '<label class="field" data-mode-field="days"><span class="field-label">Ziel (Tage)</span>' + UI.input('goal', 'number', c.goal, 'min="1" step="1"') + '</label>' +
         '<label class="field" data-mode-field="value"><span class="field-label">Zielwert</span>' + UI.input('target', 'number', c.target, 'min="0" step="1"') + '</label>' +
       '</div>' +
       '<label class="field" data-mode-field="auto-date"><span class="field-label">Startdatum (erster Tag)</span>' +
@@ -222,8 +245,8 @@ FIT.views.counters = (() => {
           label,
           emoji: String(form.emoji.value || '').trim() || '🔥',
           mode: form.mode.value,
-          goal: Math.max(1, Math.round(Number(form.goal.value) || 1)),
-          target: Math.max(0, Math.round(Number(form.target.value) || 0))
+          goal: Number(c.goal) || 30,
+          target: Math.max(0, Math.round(Number(form.target && form.target.value) || 0))
         };
         if (patch.mode === 'auto') {
           const startInput = form.querySelector('[name="startDate"]');

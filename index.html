@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#080d15">
-  <meta name="description" content="FitLog Pro – Rezepte & Makros, Trainingspläne, Trainingslog und Gewohnheitszähler. Offline, ohne Konto.">
-  <title>FitLog Pro</title>
+  <meta name="description" content="Sport Pro – Rezepte & Makros, Trainingspläne, Trainingslog und Gewohnheitszähler. Offline, ohne Konto.">
+  <title>Sport Pro</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.webmanifest">
@@ -16,15 +16,24 @@
     <aside class="sidebar" id="sidebar">
       <a class="brand" href="#/dashboard">
         <span class="brand-mark">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="9" y1="12" x2="15" y2="12" stroke="currentColor" stroke-width="2"/>
-            <circle cx="7" cy="12" r="3" fill="currentColor" stroke="none"/>
-            <circle cx="17" cy="12" r="3" fill="currentColor" stroke="none"/>
-            <circle cx="7" cy="12" r="1.2" fill="#0b1320" stroke="none"/>
-            <circle cx="17" cy="12" r="1.2" fill="#0b1320" stroke="none"/>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true">
+            <defs>
+              <filter id="logoGlow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="1.2" result="blur"/>
+                <feMerge>
+                  <feMergeNode in="blur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <g filter="url(#logoGlow)">
+              <line x1="6.8" y1="16.5" x2="8.2" y2="8.5"/>
+              <line x1="11.2" y1="18.5" x2="12.8" y2="5.5"/>
+              <line x1="15.8" y1="14.5" x2="17.2" y2="10.5"/>
+            </g>
           </svg>
         </span>
-        <span class="brand-text"><strong>FitLog Pro</strong><small>Training · Ernährung · Zähler</small></span>
+        <span class="brand-text"><strong>Sport Pro</strong><small>Training · Ernährung · Zähler</small></span>
       </a>
 
       <nav class="nav" id="nav" aria-label="Hauptnavigation"></nav>
@@ -47,6 +56,7 @@
         </button>
         <h2 class="topbar-title" id="pageTitle">Übersicht</h2>
         <div class="topbar-actions">
+          <div id="pageActions" class="page-actions"></div>
           <button class="icon-btn device-view-btn" id="deviceToggle" type="button" title="Ansicht: Automatisch" aria-label="Ansicht wechseln">
             <svg class="ico ico-device-desktop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg>
             <svg class="ico ico-device-mobile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="2.5" width="10" height="19" rx="2"/><path d="M11 18h2"/></svg>
@@ -79,7 +89,7 @@
       <main class="view" id="view"></main>
 
       <footer class="app-foot">
-        <span>FitLog Pro · alle Daten bleiben auf diesem Gerät</span>
+        <span>Sport Pro · alle Daten bleiben auf diesem Gerät</span>
       </footer>
     </div>
   </div>

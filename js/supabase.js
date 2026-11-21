@@ -1,4 +1,4 @@
-/* FitLog Pro – Supabase-Client & Auth-Helfer */
+/* Sport Pro – Supabase-Client & Auth-Helfer */
 window.FIT = window.FIT || {};
 
 FIT.supabase = (() => {

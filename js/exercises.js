@@ -1,4 +1,4 @@
-/* FitLog Pro – Übungsdatenbank mit Suche und Auswahl */
+/* Sport Pro – Übungsdatenbank mit Suche und Auswahl */
 window.FIT = window.FIT || {};
 
 FIT.exerciseDB = (() => {

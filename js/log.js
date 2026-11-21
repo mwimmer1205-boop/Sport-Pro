@@ -1,4 +1,4 @@
-/* FitLog Pro – Trainingsmodus (Live-Training + Verlauf) */
+/* Sport Pro – Trainingsmodus (Live-Training + Verlauf) */
 window.FIT = window.FIT || {};
 FIT.views = FIT.views || {};
 
@@ -472,11 +472,8 @@ FIT.views.log = (() => {
           '<button class="btn ghost" id="manualEntry2">' + UI.icon('edit') + ' Manuell eintragen</button></div>');
     }
 
+    FIT.app.setPageActions('<button class="btn ghost small" id="manualEntry">' + UI.icon('edit') + ' Manuell</button>');
     el.innerHTML =
-      '<section class="page-head">' +
-        '<div><h1>Trainingsmodus</h1><p>Plane starten, in Echtzeit erfassen und später im Verlauf nachsehen.</p></div>' +
-        '<div class="head-actions"><button class="btn ghost" id="manualEntry">' + UI.icon('edit') + ' Manuell eintragen</button></div>' +
-      '</section>' +
 
       '<section class="card live-start">' +
         '<div class="card-head"><div><h2>Training starten</h2><p class="muted">Gewichte und Wiederholungen werden Satz für Satz erfasst.</p></div></div>' +
@@ -503,7 +500,7 @@ FIT.views.log = (() => {
             '<a class="btn ghost" href="#/plans">Zu den Plänen</a></div>')) +
       '</section>';
 
-    el.querySelector('#manualEntry').addEventListener('click', () => openEditor({}));
+    document.getElementById('manualEntry')?.addEventListener('click', () => openEditor({}));
     el.querySelector('#emptyStart')?.addEventListener('click', () => startWorkout({}));
 
     const startPlan = el.querySelector('#startPlan');

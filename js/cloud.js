@@ -1,4 +1,4 @@
-/* FitLog Pro – Cloud/Supabase UI-Helfer */
+/* Sport Pro – Cloud/Supabase UI-Helfer */
 window.FIT = window.FIT || {};
 
 FIT.cloud = (() => {

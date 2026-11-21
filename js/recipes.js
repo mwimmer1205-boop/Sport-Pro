@@ -1,4 +1,4 @@
-﻿/* FitLog Pro – Rezepte (Supabase: public.recipes) */
+/* Sport Pro – Rezepte (Supabase: public.recipes) */
 window.FIT = window.FIT || {};
 FIT.views = FIT.views || {};
 
@@ -177,30 +177,28 @@ FIT.views.recipes = (() => {
     const state = SB.getState();
     if (!state.configured || !SB.user) {
       try { S.state.recipes = []; } catch (e) {}
+      FIT.app.setPageActions('');
       el.innerHTML =
-        '<section class="page-head"><div><h1>Rezepte</h1><p>Makros pro Portion speichern und direkt ins Tagebuch übernehmen.</p></div></section>' +
         Cloud.authCard('Anmeldung für Rezepte', 'Melde dich an, um deine Rezepte über dein Supabase-Konto auf Handy und Computer zu synchronisieren.');
       Cloud.bindAuthCard(el, () => { loaded = false; FIT.app.rerender(); });
       return;
     }
 
+    FIT.app.setPageActions(
+      '<button class="btn ghost small" id="importRecipes">' + UI.icon('upload') + ' Import</button>' +
+      '<button class="btn ghost small" id="importOff">' + UI.icon('search') + ' OFF</button>' +
+      '<button class="btn ghost small" id="importOffMulti">' + UI.icon('plus') + ' OFF+</button>' +
+      '<button class="btn primary small" id="newRecipe">' + UI.icon('plus') + ' Neu</button>'
+    );
+
     el.innerHTML =
-      '<section class="page-head">' +
-        '<div><h1>Rezepte</h1><p>Makros pro Portion speichern und direkt ins Tagebuch übernehmen.</p></div>' +
-        '<div class="head-actions">' +
-          '<button class="btn ghost" id="importRecipes">' + UI.icon('upload') + ' Importieren</button>' +
-          '<button class="btn ghost" id="importOff">' + UI.icon('search') + ' Open Food Facts</button>' +
-          '<button class="btn ghost" id="importOffMulti">' + UI.icon('plus') + ' Mehrere Zutaten (OFF)</button>' +
-          '<button class="btn primary" id="newRecipe">' + UI.icon('plus') + ' Neues Rezept</button>' +
-        '</div>' +
-      '</section>' +
       '<div id="recipesBody">' + Cloud.loadingCard('Lade Rezepte …') + '</div>';
 
     const body = el.querySelector('#recipesBody');
-    el.querySelector('#newRecipe')?.addEventListener('click', () => openEditor());
-    el.querySelector('#importOff')?.addEventListener('click', () => openImport('recipe'));
-    el.querySelector('#importOffMulti')?.addEventListener('click', () => openMultiImport());
-    el.querySelector('#importRecipes')?.addEventListener('click', () => openImportRecipes());
+    document.getElementById('newRecipe')?.addEventListener('click', () => openEditor());
+    document.getElementById('importOff')?.addEventListener('click', () => openImport('recipe'));
+    document.getElementById('importOffMulti')?.addEventListener('click', () => openMultiImport());
+    document.getElementById('importRecipes')?.addEventListener('click', () => openImportRecipes());
 
     try {
       await ensureLoaded(!loaded);

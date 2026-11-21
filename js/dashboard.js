@@ -1,4 +1,4 @@
-/* FitLog Pro – Dashboard */
+/* Sport Pro – Dashboard */
 window.FIT = window.FIT || {};
 FIT.views = FIT.views || {};
 
@@ -28,46 +28,40 @@ FIT.views.dashboard = (() => {
     }).join('');
 
     if (isAuto) {
-      const info = S.savedMoney(c.key);
-      const pct = goal > 0 ? U.clamp(Math.round((streak / goal) * 100), 0, 100) : 0;
-      const moneyLine = info ? (U.fmtNum(info.saved, 2) + ' € gespart') : (c.startDate ? 'Automatisch' : 'Startdatum festlegen');
+      const val = S.autoDays(c);
+      const info = typeof S.savedMoney === 'function' ? S.savedMoney(c.key) : null;
+      const moneyLine = info ? (U.fmtNum(info.saved, 2) + ' € gespart') : '';
       return '<article class="card counter-card" data-counter="' + c.key + '">' +
         '<div class="counter-head">' +
           '<span class="counter-emoji">' + U.esc(c.emoji || '🎯') + '</span>' +
-          '<div class="counter-titles"><h3>' + U.esc(c.label) + '</h3><p>Ziel ' + U.fmtNum(goal) + ' Tage</p></div>' +
+          '<div class="counter-titles"><h3>' + U.esc(c.label) + '</h3></div>' +
         '</div>' +
-        '<div class="counter-value-row"><span class="counter-value">' + U.fmtNum(streak) + '</span><span class="counter-unit">Tage seit Start</span></div>' +
-        '<div class="bar slim"><span class="bar-fill accent" style="width:' + pct + '%"></span></div>' +
+        '<div class="counter-value-row"><span class="counter-value">' + U.fmtNum(val) + '</span><span class="counter-unit">' + (c.key === 'smoke' ? 'Tage rauchfrei' : 'Tage') + '</span></div>' +
         '<div class="counter-foot">' +
-          '<button class="btn small ' + (c.startDate ? 'ghost' : 'primary') + '" data-edit-counter="' + c.key + '">' + (c.startDate ? 'Anpassen' : 'Startdatum') + '</button>' +
+          (c.startDate ? '' : '<button class="btn small primary" data-edit-counter="' + c.key + '">Startdatum</button>') +
           '<span class="counter-meta">' + U.esc(moneyLine) + '</span>' +
         '</div>' +
       '</article>';
     }
 
     if (isValue) {
-      const target = Number(c.target) || 0;
-      const pct = target > 0 ? U.clamp(Math.round((Number(c.value) / target) * 100), 0, 100) : 0;
       return '<article class="card counter-card" data-counter="' + c.key + '">' +
         '<div class="counter-head">' +
           '<span class="counter-emoji">' + U.esc(c.emoji || '🎯') + '</span>' +
-          '<div class="counter-titles"><h3>' + U.esc(c.label) + '</h3><p>Ziel ' + U.fmtNum(target) + '</p></div>' +
+          '<div class="counter-titles"><h3>' + U.esc(c.label) + '</h3></div>' +
         '</div>' +
         '<div class="counter-value-row"><span class="counter-value">' + U.fmtNum(c.value) + '</span><span class="counter-unit">aktuell</span></div>' +
-        '<div class="bar slim"><span class="bar-fill accent" style="width:' + pct + '%"></span></div>' +
         '<div class="counter-foot">' +
           '<button class="btn small ghost" data-adjust="' + c.key + '" data-delta="-1" aria-label="verringern">' + UI.icon('minus') + '</button>' +
           '<button class="btn small ghost" data-adjust="' + c.key + '" data-delta="1" aria-label="erhöhen">' + UI.icon('plus') + '</button>' +
-          '<span class="counter-meta">' + pct + ' %</span>' +
         '</div>' +
       '</article>';
     }
 
-    const pct = goal > 0 ? U.clamp(Math.round((streak / goal) * 100), 0, 100) : 0;
     return '<article class="card counter-card" data-counter="' + c.key + '">' +
       '<div class="counter-head">' +
         '<span class="counter-emoji">' + U.esc(c.emoji || '🔥') + '</span>' +
-        '<div class="counter-titles"><h3>' + U.esc(c.label) + '</h3><p>Ziel ' + U.fmtNum(goal) + ' Tage</p></div>' +
+        '<div class="counter-titles"><h3>' + U.esc(c.label) + '</h3></div>' +
       '</div>' +
       '<div class="counter-value-row"><span class="counter-value">' + U.fmtNum(streak) + '</span><span class="counter-unit">Tage in Folge</span></div>' +
       '<div class="dots" aria-hidden="true">' + dots + '</div>' +
@@ -75,7 +69,7 @@ FIT.views.dashboard = (() => {
         '<button class="btn small ' + (doneToday ? 'done' : 'primary') + '" data-check="' + c.key + '">' +
           (doneToday ? UI.icon('check') + ' Erledigt' : 'Heute abhaken') +
         '</button>' +
-        '<span class="counter-meta">Gesamt ' + U.fmtNum(total) + ' · ' + pct + ' %</span>' +
+        '<span class="counter-meta">Gesamt ' + U.fmtNum(total) + '</span>' +
       '</div>' +
     '</article>';
   }
@@ -100,7 +94,8 @@ FIT.views.dashboard = (() => {
 
     let trainingBody;
     if (todayWorkouts.length) {
-      trainingBody = todayWorkouts.map((w) =>
+      const shownWorkouts = todayWorkouts.slice(0, 3);
+      trainingBody = shownWorkouts.map((w) =>
         '<button class="workout-mini" data-open-workout="' + w.id + '">' +
           '<span class="workout-mini-icon">' + UI.icon('dumbbell') + '</span>' +
           '<span class="workout-mini-main"><strong>' + U.esc(w.name || 'Training') + '</strong>' +
@@ -126,16 +121,14 @@ FIT.views.dashboard = (() => {
       }
     }
 
-    el.innerHTML =
-      '<section class="page-head dashboard-head">' +
-        '<div><h1>' + greeting() + name + ' 👋</h1><p>' + U.esc(U.fmtDateLong(today)) + '</p></div>' +
-        '<div class="head-actions">' +
-          '<a class="btn ghost" href="#/recipes">' + UI.icon('recipes') + ' Rezepte</a>' +
-          '<a class="btn primary" href="#/nutrition">' + UI.icon('plus') + ' Mahlzeit</a>' +
-        '</div>' +
-      '</section>' +
+    FIT.app.setPageActions('');
+    const titleEl = document.getElementById('pageTitle');
+    if (titleEl) titleEl.textContent = greeting() + name;
 
-      '<div class="grid counters-grid dashboard-counters">' + S.counterList().map(counterCard).join('') + '</div>' +
+    el.innerHTML =
+      '<div class="dashboard-date muted small-text">' + U.esc(U.fmtDateLong(today)) + '</div>' +
+
+      '<div class="grid counters-grid dashboard-counters">' + ['sport', 'smoke', 'private'].map((k) => S.counter(k)).filter(Boolean).map(counterCard).join('') + '</div>' +
 
       '<div class="dash-grid dashboard-main">' +
         '<section class="card nutrition-summary">' +

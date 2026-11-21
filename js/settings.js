@@ -1,4 +1,4 @@
-/* FitLog Pro – Einstellungen & Datensicherung */
+/* Sport Pro – Einstellungen & Datensicherung */
 window.FIT = window.FIT || {};
 FIT.views = FIT.views || {};
 
@@ -12,10 +12,8 @@ FIT.views.settings = (() => {
     const bytes = new Blob([JSON.stringify(S.state)]).size;
     const kb = Math.max(1, Math.round(bytes / 1024));
 
+    FIT.app.setPageActions('');
     el.innerHTML =
-      '<section class="page-head">' +
-        '<div><h1>Einstellungen</h1><p>Profil, Tagesziele und deine lokalen Daten.</p></div>' +
-      '</section>' +
 
       '<div class="settings-grid">' +
         '<section class="card">' +
@@ -84,7 +82,7 @@ FIT.views.settings = (() => {
         '</section>' +
 
         '<section class="card wide-card">' +
-          '<div class="card-head"><div><h2>Über FitLog Pro</h2><p class="muted">Version 1.0</p></div></div>' +
+          '<div class="card-head"><div><h2>Über Sport Pro</h2><p class="muted">Version 1.0</p></div></div>' +
           '<div class="about-grid">' +
             '<div><strong>' + UI.icon('shield') + ' Datenschutz & Sync</strong><p>Lokale Daten (z. B. Tagebuch, Training, Gewohnheiten) bleiben im Browser dieses Geräts. Rezepte werden über Supabase mit deinem Konto synchronisiert, wenn du angemeldet bist.</p></div>' +
             '<div><strong>' + UI.icon('download') + ' Offline</strong><p>Viele Funktionen funktionieren offline. Für Anmeldung und Cloud-Synchronisation von Rezepten ist eine Internetverbindung erforderlich.</p></div>' +

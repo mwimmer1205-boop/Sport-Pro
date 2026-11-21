@@ -1,9 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="112" fill="#0b1320"/>
-  <rect x="24" y="24" width="464" height="464" rx="92" fill="none" stroke="#1c2939" stroke-width="2"/>
-  <line x1="160" y1="256" x2="352" y2="256" stroke="#7cb8ff" stroke-width="40" stroke-linecap="round"/>
-  <circle cx="132" cy="256" r="56" fill="#7cb8ff"/>
-  <circle cx="380" cy="256" r="56" fill="#7cb8ff"/>
-  <circle cx="132" cy="256" r="24" fill="#0b1320"/>
-  <circle cx="380" cy="256" r="24" fill="#0b1320"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#111d30"/>
+      <stop offset="100%" stop-color="#0b1320"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <rect x="24" y="24" width="464" height="464" rx="92" fill="none" stroke="#67d4ff" stroke-opacity="0.16" stroke-width="4"/>
+  <g filter="url(#glow)" stroke="#67d4ff" stroke-width="34" stroke-linecap="round">
+    <line x1="168" y1="348" x2="196" y2="172"/>
+    <line x1="244" y1="380" x2="276" y2="132"/>
+    <line x1="322" y1="308" x2="346" y2="220"/>
+  </g>
 </svg>

@@ -1,4 +1,4 @@
-/* FitLog Pro – Trainingsplan */
+/* Sport Pro – Trainingsplan */
 window.FIT = window.FIT || {};
 FIT.views = FIT.views || {};
 
@@ -46,18 +46,15 @@ FIT.views.plans = (() => {
 
   function render(el) {
     const plans = S.state.plans;
+    FIT.app.setPageActions(plans.length ? '' : '<button class="btn primary small" id="newPlan">' + UI.icon('plus') + ' Neuer Plan</button>');
     el.innerHTML =
-      '<section class="page-head">' +
-        '<div><h1>Trainingsplan</h1><p>Ein Ganzkörperplan, den du über einen festgelegten Zeitraum verfolgst.</p></div>' +
-        (plans.length ? '' : '<div class="head-actions"><button class="btn primary" id="newPlan">' + UI.icon('plus') + ' Neuer Plan</button></div>') +
-      '</section>' +
       (plans.length ?
         '<div class="plans-grid">' + plans.map(planCard).join('') + '</div>'
         : UI.emptyState('🗂️', 'Noch kein Trainingsplan', 'Erstelle einen Ganzkörperplan mit Übungen und einem Zieldatum. Du kannst auch eine fertige Vorlage laden.',
           '<div class="row gap center"><button class="btn primary" id="emptyNewPlan">' + UI.icon('plus') + ' Plan erstellen</button>' +
           '<button class="btn ghost" id="loadExample">Beispielplan laden</button></div>'));
 
-    el.querySelector('#newPlan')?.addEventListener('click', () => openEditor());
+    document.getElementById('newPlan')?.addEventListener('click', () => openEditor());
     el.querySelector('#emptyNewPlan')?.addEventListener('click', () => openEditor());
     el.querySelector('#loadExample')?.addEventListener('click', () => {
       if (S.state.plans.length) { UI.toast('Es ist bereits ein Trainingsplan vorhanden.', 'error'); return; }

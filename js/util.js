@@ -1,4 +1,4 @@
-/* FitLog Pro – allgemeine Helfer */
+/* Sport Pro – allgemeine Helfer */
 window.FIT = window.FIT || {};
 
 FIT.util = (() => {

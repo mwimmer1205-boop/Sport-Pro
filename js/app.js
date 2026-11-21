@@ -1,4 +1,4 @@
-/* FitLog Pro – App-Shell, Navigation & Routing */
+/* Sport Pro – App-Shell, Navigation & Routing */
 window.FIT = window.FIT || {};
 
 FIT.app = (() => {
@@ -46,7 +46,12 @@ FIT.app = (() => {
   function setActive(route) {
     document.querySelectorAll('.nav-link').forEach((a) => a.classList.toggle('active', a.dataset.route === route));
     const title = document.getElementById('pageTitle');
-    if (title) title.textContent = TITLES[route] || 'FitLog Pro';
+    if (title) title.textContent = TITLES[route] || 'Sport Pro';
+  }
+
+  function setPageActions(html) {
+    const el = document.getElementById('pageActions');
+    if (el) el.innerHTML = html || '';
   }
 
   function routeFromHash() {
@@ -59,6 +64,7 @@ FIT.app = (() => {
     const route = routeFromHash();
     current = route;
     setActive(route);
+    setPageActions('');
     const view = document.getElementById('view');
     const mod = FIT.views[route];
     if (!view || !mod) return;
@@ -198,7 +204,7 @@ FIT.app = (() => {
     }
   }
 
-  return { init, render, rerender, renderNav, setActive, applyDeviceMode, toggleDeviceMode, get current() { return current; } };
+  return { init, render, rerender, renderNav, setActive, setPageActions, applyDeviceMode, toggleDeviceMode, get current() { return current; } };
 })();
 
 document.addEventListener('DOMContentLoaded', () => FIT.app.init());

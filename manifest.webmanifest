@@ -1,6 +1,6 @@
 {
-  "name": "FitLog Pro – Training, Ernährung & Zähler",
-  "short_name": "FitLog Pro",
+  "name": "Sport Pro – Training, Ernährung & Zähler",
+  "short_name": "Sport Pro",
   "description": "Offline-App für Rezepte mit Makro-Tracking, Trainingspläne, Trainingslog und Gewohnheitszähler.",
   "start_url": "./index.html",
   "scope": "./",

@@ -1,4 +1,4 @@
-/* FitLog Pro – Ernährungstagebuch & Makro-Tracking */
+/* Sport Pro – Ernährungstagebuch & Makro-Tracking */
 window.FIT = window.FIT || {};
 FIT.views = FIT.views || {};
 
@@ -52,15 +52,13 @@ FIT.views.nutrition = (() => {
       '</section>';
     }).join('');
 
+    FIT.app.setPageActions(
+      '<button class="btn ghost small" id="importOff">' + UI.icon('search') + ' OFF</button>' +
+      '<button class="btn ghost small" id="addCustom">' + UI.icon('plus') + ' Eigenes</button>' +
+      '<button class="btn primary small" id="addRecipe">' + UI.icon('recipes') + ' Rezept</button>'
+    );
+
     el.innerHTML =
-      '<section class="page-head">' +
-        '<div><h1>Ernährung</h1><p>Mahlzeiten und Makros für den Tag erfassen.</p></div>' +
-        '<div class="head-actions">' +
-          '<button class="btn ghost" id="importOff">' + UI.icon('search') + ' Open Food Facts</button>' +
-          '<button class="btn ghost" id="addCustom">' + UI.icon('plus') + ' Eigenes Lebensmittel</button>' +
-          '<button class="btn primary" id="addRecipe">' + UI.icon('recipes') + ' Rezept hinzufügen</button>' +
-        '</div>' +
-      '</section>' +
 
       '<div class="date-bar card">' +
         '<button class="icon-btn" id="prevDay" title="Vortag">' + UI.icon('chevronLeft') + '</button>' +
@@ -94,9 +92,9 @@ FIT.views.nutrition = (() => {
     });
     const jump = el.querySelector('#jumpToday');
     if (jump) jump.addEventListener('click', () => setDate(U.todayISO()));
-    el.querySelector('#addCustom').addEventListener('click', () => openCustom());
-    el.querySelector('#addRecipe').addEventListener('click', () => { openAddRecipe(); });
-    el.querySelector('#importOff')?.addEventListener('click', () => { if (FIT.views.recipes && FIT.views.recipes.openImport) FIT.views.recipes.openImport('diary'); });
+    document.getElementById('addCustom')?.addEventListener('click', () => openCustom());
+    document.getElementById('addRecipe')?.addEventListener('click', () => { openAddRecipe(); });
+    document.getElementById('importOff')?.addEventListener('click', () => { if (FIT.views.recipes && FIT.views.recipes.openImport) FIT.views.recipes.openImport('diary'); });
     el.querySelectorAll('[data-add-meal]').forEach((b) => {
       b.addEventListener('click', () => { openAddRecipe(null, b.dataset.addMeal); });
     });

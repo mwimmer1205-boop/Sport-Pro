@@ -1,4 +1,4 @@
-/* FitLog Pro – UI-Bausteine: Icons, Dialoge, Toasts */
+/* Sport Pro – UI-Bausteine: Icons, Dialoge, Toasts */
 window.FIT = window.FIT || {};
 
 FIT.ui = (() => {

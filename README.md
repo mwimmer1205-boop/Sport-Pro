@@ -1,6 +1,6 @@
-# FitLog Pro
+# Sport Pro
 
-FitLog Pro ist eine **vollständig offline** lauffähige App für Training, Ernährung und Gewohnheiten – ohne Konto, Cloud oder externe Ressourcen. Alle Daten bleiben lokal im Browser-Speicher deines Geräts.
+Sport Pro ist eine **vollständig offline** lauffähige App für Training, Ernährung und Gewohnheiten – ohne Konto, Cloud oder externe Ressourcen. Alle Daten bleiben lokal im Browser-Speicher deines Geräts.
 
 ## Start
 
@@ -83,7 +83,7 @@ manifest.webmanifest  Installierbare App
 
 Das Projekt ist eine reine Static-Site (HTML/CSS/JS) – perfekt für **GitHub Pages**.
 
-1. Neues Repository auf GitHub anlegen (z. B. `fitlog-pro`).
+1. Neues Repository auf GitHub anlegen (z. B. `sport-pro`).
 2. Alle Dateien aus dem Ordner `Fitness-Studio` in das Repository kopieren/committen (inkl. `.nojekyll`).
 3. Auf GitHub: **Settings → Pages → Source: Deploy from a branch**, Branch `main` / Ordner `/ (root)` wählen.
 4. Nach dem Deployment ist die App unter `https://<user>.github.io/<repo>/` erreichbar – inklusive Offline-Cache und Installation als App.

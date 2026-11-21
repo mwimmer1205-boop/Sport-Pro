@@ -1,5 +1,5 @@
-﻿/* FitLog Pro â€“ Offline-Cache (nur lokale Dateien) */
-const CACHE = 'fitlog-pro-v28';
+/* Sport Pro â€“ Offline-Cache (nur lokale Dateien) */
+const CACHE = 'sport-pro-v28';
 const ASSETS = [
   './',
   './index.html',

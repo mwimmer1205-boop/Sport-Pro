@@ -1,4 +1,4 @@
-﻿/* Fitness Studio – Datenmodell & lokale Speicherung */
+/* Sport Pro – Datenmodell & lokale Speicherung */
 window.FIT = window.FIT || {};
 
 FIT.store = (() => {
@@ -20,17 +20,17 @@ FIT.store = (() => {
       },
       counters: {
         smoke: {
-          key: 'smoke', label: 'Nicht geraucht', emoji: '🚭', mode: 'auto',
+          key: 'smoke', label: 'Rauchen', emoji: '🚭', mode: 'auto',
           goal: 30, days: {}, value: 0, target: 100,
           startDate: U.todayISO(), autoCigarettesPerDay: 20, autoPackSize: 20, autoPricePerPack: 7
         },
         sport: {
-          key: 'sport', label: 'Sport gemacht', emoji: '🏋️', mode: 'days',
+          key: 'sport', label: 'Sport', emoji: '🏋️', mode: 'days',
           goal: 30, days: {}, value: 0, target: 100,
           startDate: null, autoCigarettesPerDay: 0, autoPackSize: 20, autoPricePerPack: 0
         },
         private: {
-          key: 'private', label: 'Privater Zähler', emoji: '🎯', mode: 'auto',
+          key: 'private', label: 'Counter', emoji: '🎯', mode: 'auto',
           goal: 30, days: {}, value: 0, target: 100,
           startDate: U.todayISO(), autoCigarettesPerDay: 0, autoPackSize: 20, autoPricePerPack: 0
         }
@@ -67,13 +67,28 @@ FIT.store = (() => {
     return out;
   }
 
+  function migrateCounterLabels() {
+    const renames = {
+      smoke: { 'Nicht geraucht': 'Rauchen' },
+      sport: { 'Sport gemacht': 'Sport' },
+      private: { 'Privater Zähler': 'Counter' }
+    };
+    Object.keys(renames).forEach((key) => {
+      const c = state.counters && state.counters[key];
+      if (!c) return;
+      const next = renames[key][c.label];
+      if (next) c.label = next;
+    });
+  }
+
   function load() {
     try {
       const raw = localStorage.getItem(KEY);
-      if (!raw) return state;
+      if (!raw) { state = defaults(); return state; }
       state = merge(defaults(), JSON.parse(raw));
+      migrateCounterLabels();
     } catch (e) {
-      console.warn('FitLog Pro: Speicher konnte nicht gelesen werden.', e);
+      console.warn('Sport Pro: Speicher konnte nicht gelesen werden.', e);
       state = defaults();
     }
     return state;
@@ -84,7 +99,7 @@ FIT.store = (() => {
       localStorage.setItem(KEY, JSON.stringify(state));
       return true;
     } catch (e) {
-      console.error('FitLog Pro: Speichern fehlgeschlagen.', e);
+      console.error('Sport Pro: Speichern fehlgeschlagen.', e);
       return false;
     }
   }
@@ -327,6 +342,13 @@ FIT.store = (() => {
       data.createdAt = Date.now();
       state.workouts.unshift(data);
     }
+    try {
+      const d = data && data.date;
+      const sport = state.counters && state.counters.sport;
+      if (d && sport && sport.mode === 'days' && !sport.days[d]) {
+        sport.days[d] = true;
+      }
+    } catch (e) {}
     save();
     return data;
   }
@@ -380,7 +402,7 @@ FIT.store = (() => {
     const data = JSON.parse(text);
     if (!data || typeof data !== 'object') throw new Error('Ungültige Datei.');
     if (!data.counters && !data.recipes && !data.workouts && !data.plans) {
-      throw new Error('Die Datei enthält keine FitLog Pro-Daten.');
+      throw new Error('Die Datei enthält keine Sport Pro-Daten.');
     }
     state = merge(defaults(), data);
     save();
